@@ -50,6 +50,8 @@ export default function Home() {
         <TextScramble
           className="text-xs text-zinc-900 font-mono"
           trigger={true}
+          duration={1.5}
+          speed={0.05}
           characterSet="abcdefghijklmnopqrstuvwxyz0123456789!"
         >
           salut!
@@ -60,6 +62,8 @@ export default function Home() {
         <TextScramble
           className="text-xs text-zinc-400 font-mono text-center"
           trigger={true}
+          duration={2}
+          speed={0.05}
           characterSet="abcdefghijklmnopqrstuvwxyzàâéèêëîïôùûüç ?-'"
         >
           tu cherches quelque chose peut-être?
@@ -74,6 +78,8 @@ export default function Home() {
           <TextScramble
             className="text-xs text-zinc-400 font-mono text-center"
             trigger={scrambleTitle}
+            duration={2.5}
+            speed={0.05}
             characterSet="abcdefghijklmnopqrstuvwxyzàâéèêëîïôùûüç '"
           >
             Dis moi ce que tu cherches c'est très très trèssssss important

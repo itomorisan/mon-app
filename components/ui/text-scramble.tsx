@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type TextScrambleProps = {
   children: string;
@@ -23,12 +23,9 @@ export function TextScramble({
   onScrambleComplete,
 }: TextScrambleProps) {
   const [displayText, setDisplayText] = useState(children);
-  const animating = useRef(false);
 
   useEffect(() => {
     if (!trigger) return;
-    if (animating.current) return;
-    animating.current = true;
 
     const text = children;
     const steps = Math.floor(duration / speed);
@@ -50,7 +47,6 @@ export function TextScramble({
       if (step > steps) {
         clearInterval(interval);
         setDisplayText(text);
-        animating.current = false;
         onScrambleComplete?.();
       }
     }, speed * 1000);
