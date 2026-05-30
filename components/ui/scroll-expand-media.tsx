@@ -15,11 +15,13 @@ interface ScrollExpandMediaProps {
   mediaType?: 'video' | 'image';
   mediaSrc: string;
   posterSrc?: string;
-  bgImageSrc: string;
+  bgImageSrc?: string;
+  background?: ReactNode;
   title?: string;
   date?: string;
   scrollToExpand?: string;
   textBlend?: boolean;
+  autoExpand?: boolean;
   children?: ReactNode;
 }
 
@@ -28,10 +30,12 @@ const ScrollExpandMedia = ({
   mediaSrc,
   posterSrc,
   bgImageSrc,
+  background,
   title,
   date,
   scrollToExpand,
   textBlend,
+  autoExpand = false,
   children,
 }: ScrollExpandMediaProps) => {
   const [scrollProgress, setScrollProgress] = useState<number>(0);
@@ -48,7 +52,30 @@ const ScrollExpandMedia = ({
     setMediaFullyExpanded(false);
   }, [mediaType]);
 
+  // Auto-expansion animée (transition automatique sans scroll)
   useEffect(() => {
+    if (!autoExpand) return;
+    const duration = 2200; // ms
+    const start = performance.now();
+    let raf: number;
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / duration, 1);
+      // easeInOut
+      const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      setScrollProgress(eased);
+      if (t >= 1) {
+        setMediaFullyExpanded(true);
+        setShowContent(true);
+      } else {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [autoExpand]);
+
+  useEffect(() => {
+    if (autoExpand) return; // pas de contrôle scroll en mode auto
     const handleWheel = (e: Event) => {
       const we = e as unknown as WheelEvent;
       if (mediaFullyExpanded && we.deltaY < 0 && window.scrollY <= 5) {
@@ -125,16 +152,22 @@ const ScrollExpandMedia = ({
     <div ref={sectionRef} className='transition-colors duration-700 ease-in-out overflow-x-hidden'>
       <section className='relative flex flex-col items-center justify-start min-h-[100dvh]'>
         <div className='relative w-full flex flex-col items-center min-h-[100dvh]'>
-          <motion.div
-            className='absolute inset-0 z-0 h-full'
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 - scrollProgress }}
-            transition={{ duration: 0.1 }}
-          >
-            <Image src={bgImageSrc} alt='Background' width={1920} height={1080}
-              className='w-screen h-screen' style={{ objectFit: 'cover', objectPosition: 'center' }} priority />
-            <div className='absolute inset-0 bg-black/10' />
-          </motion.div>
+          {background ? (
+            <div className='fixed inset-0 z-0 h-full pointer-events-none'>
+              {background}
+            </div>
+          ) : bgImageSrc ? (
+            <motion.div
+              className='absolute inset-0 z-0 h-full'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 - scrollProgress }}
+              transition={{ duration: 0.1 }}
+            >
+              <Image src={bgImageSrc} alt='Background' width={1920} height={1080}
+                className='w-screen h-screen' style={{ objectFit: 'cover', objectPosition: 'center' }} priority />
+              <div className='absolute inset-0 bg-black/10' />
+            </motion.div>
+          ) : null}
 
           <div className='container mx-auto flex flex-col items-center justify-start relative z-10'>
             <div className='flex flex-col items-center justify-center w-full h-[100dvh] relative'>

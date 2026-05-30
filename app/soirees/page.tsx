@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { Home, PartyPopper, MapPin, User, Mail } from 'lucide-react';
 import { Dock } from '@/components/ui/dock';
 import ScrollExpandMedia from '@/components/ui/scroll-expand-media';
+import { SmokeBackground } from '@/components/ui/smoke-background';
 
 const soirees = [
   { id: 1, title: 'Nuit Électro', date: 'Sam 7 Juin', lieu: 'Warehouse Paris 18e', prix: '15€' },
@@ -31,10 +32,10 @@ function SoireesContent() {
       <ScrollExpandMedia
         mediaType="image"
         mediaSrc="https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=1280&q=80"
-        bgImageSrc="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920&q=80"
+        background={<SmokeBackground smokeColor="#808080" />}
         title={query}
         date="ce week-end"
-        scrollToExpand="↓ scroll pour découvrir"
+        autoExpand
         textBlend
       >
         <div className="max-w-2xl mx-auto w-full flex flex-col gap-4 pb-32">
