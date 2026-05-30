@@ -1,11 +1,18 @@
 "use client"
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
 
 export function AIChatInput() {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+
+  const handleSubmit = () => {
+    if (!value.trim()) return;
+    router.push(`/soirees?q=${encodeURIComponent(value)}`);
+  };
 
   return (
     <div
@@ -18,10 +25,12 @@ export function AIChatInput() {
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
         className="flex-1 bg-transparent text-sm text-zinc-900 outline-none border-none"
       />
       <button
         type="button"
+        onClick={handleSubmit}
         className="flex items-center justify-center bg-black text-white rounded-full p-2 hover:bg-zinc-700 transition-colors"
       >
         <Send size={15} />
