@@ -55,7 +55,7 @@ const ScrollExpandMedia = ({
   // Auto-expansion animée (transition automatique sans scroll)
   useEffect(() => {
     if (!autoExpand) return;
-    const duration = 2200; // ms
+    const duration = 1000; // ms - rapide
     const start = performance.now();
     let raf: number;
     const tick = (now: number) => {
@@ -66,6 +66,13 @@ const ScrollExpandMedia = ({
       if (t >= 1) {
         setMediaFullyExpanded(true);
         setShowContent(true);
+        // Lock sur les annonces : scroll auto vers le contenu
+        setTimeout(() => {
+          const target = sectionRef.current?.querySelector('[data-content]');
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 250);
       } else {
         raf = requestAnimationFrame(tick);
       }
@@ -182,26 +189,28 @@ const ScrollExpandMedia = ({
                     initial={{ opacity: 0.7 }} animate={{ opacity: 0.7 - scrollProgress * 0.3 }} transition={{ duration: 0.2 }} />
                 </div>
 
-                <div className='flex flex-col items-center text-center relative z-10 mt-4 transition-none'>
-                  {date && (
+                {date && !autoExpand && (
+                  <div className='flex flex-col items-center text-center relative z-10 mt-4 transition-none'>
                     <p className='text-2xl text-blue-200' style={{ transform: `translateX(-${textTranslateX}vw)` }}>{date}</p>
-                  )}
-                  {scrollToExpand && (
-                    <p className='text-blue-200 font-medium text-center' style={{ transform: `translateX(${textTranslateX}vw)` }}>{scrollToExpand}</p>
-                  )}
-                </div>
+                    {scrollToExpand && (
+                      <p className='text-blue-200 font-medium text-center' style={{ transform: `translateX(${textTranslateX}vw)` }}>{scrollToExpand}</p>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <div className={`flex items-center justify-center text-center gap-4 w-full relative z-10 transition-none flex-col ${textBlend ? 'mix-blend-difference' : 'mix-blend-normal'}`}>
-                <motion.h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-blue-200 transition-none'
-                  style={{ transform: `translateX(-${textTranslateX}vw)` }}>{firstWord}</motion.h2>
-                <motion.h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-center text-blue-200 transition-none'
-                  style={{ transform: `translateX(${textTranslateX}vw)` }}>{restOfTitle}</motion.h2>
-              </div>
+              {title && !autoExpand && (
+                <div className={`flex items-center justify-center text-center gap-4 w-full relative z-10 transition-none flex-col ${textBlend ? 'mix-blend-difference' : 'mix-blend-normal'}`}>
+                  <motion.h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-blue-200 transition-none'
+                    style={{ transform: `translateX(-${textTranslateX}vw)` }}>{firstWord}</motion.h2>
+                  <motion.h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-center text-blue-200 transition-none'
+                    style={{ transform: `translateX(${textTranslateX}vw)` }}>{restOfTitle}</motion.h2>
+                </div>
+              )}
             </div>
 
-            <motion.section className='flex flex-col w-full px-8 py-10 md:px-16 lg:py-20'
-              initial={{ opacity: 0 }} animate={{ opacity: showContent ? 1 : 0 }} transition={{ duration: 0.7 }}>
+            <motion.section data-content className='flex flex-col w-full px-8 py-10 md:px-16 lg:py-20'
+              initial={{ opacity: 0 }} animate={{ opacity: showContent ? 1 : 0 }} transition={{ duration: 0.4 }}>
               {children}
             </motion.section>
           </div>
