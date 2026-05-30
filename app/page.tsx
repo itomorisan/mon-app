@@ -12,21 +12,14 @@ export default function Home() {
   const [scrambleTitle, setScrambleTitle] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Au mount : vérifier si l'intro a déjà été vue
+  // Au mount : toujours commencer par l'intro
   useEffect(() => {
-    const seen = typeof window !== "undefined" && localStorage.getItem("intro_seen");
-    if (seen) {
-      setStep("chat");
-      setScrambleTitle(true);
-    } else {
-      setStep("salut");
-    }
+    setStep("salut");
     setReady(true);
   }, []);
 
   const goToChat = () => {
     if (timer.current) clearTimeout(timer.current);
-    localStorage.setItem("intro_seen", "1");
     setStep("chat");
     setScrambleTitle(true);
   };
