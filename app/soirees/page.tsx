@@ -19,7 +19,7 @@ function SoireesContent() {
   const query = searchParams.get('q') || '';
 
   const dockItems = [
-    { icon: Home, label: 'Home', onClick: () => router.push('/') },
+    { icon: Home, label: 'Home', onClick: () => router.push('/?skip=1') },
     { icon: PartyPopper, label: 'Soirées', onClick: () => router.push('/soirees') },
     { icon: MapPin, label: 'Lieux' },
     { icon: User, label: 'About' },

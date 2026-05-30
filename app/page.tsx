@@ -12,9 +12,16 @@ export default function Home() {
   const [scrambleTitle, setScrambleTitle] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Au mount : toujours commencer par l'intro
+  const [blank, setBlank] = useState(false);
+
+  // Au mount : intro, sauf si on revient via le bouton Accueil (?skip=1) -> page vide
   useEffect(() => {
-    setStep("salut");
+    const skip = new URLSearchParams(window.location.search).get("skip");
+    if (skip) {
+      setBlank(true);
+    } else {
+      setStep("salut");
+    }
     setReady(true);
   }, []);
 
@@ -38,7 +45,7 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
-  if (!ready) return <main className="min-h-screen bg-white" />;
+  if (!ready || blank) return <main className="min-h-screen bg-white" />;
 
   return (
     <main
