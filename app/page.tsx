@@ -7,50 +7,57 @@ import { AIChatInput } from "@/components/ui/ai-chat-input";
 type Step = "salut" | "question" | "chat";
 
 export default function Home() {
-  const [step, setStep] = useState<Step>("salut");
-  const [scrambleDone, setScrambleDone] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [step, setStep] = useState<Step>("chat");
+  const [scrambleTitle, setScrambleTitle] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Au mount : vérifier si l'intro a déjà été vue
+  useEffect(() => {
+    const seen = typeof window !== "undefined" && localStorage.getItem("intro_seen");
+    if (seen) {
+      setStep("chat");
+      setScrambleTitle(true);
+    } else {
+      setStep("salut");
+    }
+    setReady(true);
+  }, []);
+
+  const goToChat = () => {
+    if (timer.current) clearTimeout(timer.current);
+    localStorage.setItem("intro_seen", "1");
+    setStep("chat");
+    setScrambleTitle(true);
+  };
 
   const next = () => {
     if (timer.current) clearTimeout(timer.current);
-    if (step === "salut") {
-      setScrambleDone(false);
-      setStep("question");
-    } else if (step === "question") {
-      setStep("chat");
-    }
+    if (step === "salut") setStep("question");
+    else if (step === "question") goToChat();
   };
 
-  // auto-avance après 10s
+  // auto-avance après 10s pendant l'intro
   useEffect(() => {
-    timer.current = setTimeout(() => {
-      if (step === "salut") {
-        setScrambleDone(false);
-        setStep("question");
-      } else if (step === "question") {
-        setStep("chat");
-      }
-    }, 10000);
+    if (step === "chat") return;
+    timer.current = setTimeout(next, 10000);
     return () => { if (timer.current) clearTimeout(timer.current); };
-  }, [step, scrambleDone]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
 
-  const handleTap = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    next();
-  };
+  if (!ready) return <main className="min-h-screen bg-white" />;
 
   return (
     <main
-      className="min-h-screen w-full bg-white flex flex-col items-center justify-center gap-4 px-6 select-none cursor-pointer"
-      style={{ touchAction: "manipulation" }}
-      onClick={next}
+      className="min-h-screen w-full bg-white flex flex-col items-center justify-center gap-4 px-6 select-none"
+      style={{ touchAction: "manipulation", cursor: step !== "chat" ? "pointer" : "default" }}
+      onClick={step !== "chat" ? next : undefined}
     >
       {step === "salut" && (
         <TextScramble
           className="text-xs text-zinc-900 font-mono"
           trigger={true}
           characterSet="abcdefghijklmnopqrstuvwxyz0123456789!"
-          onScrambleComplete={() => setScrambleDone(true)}
         >
           salut!
         </TextScramble>
@@ -61,7 +68,6 @@ export default function Home() {
           className="text-xs text-zinc-400 font-mono text-center"
           trigger={true}
           characterSet="abcdefghijklmnopqrstuvwxyzàâéèêëîïôùûüç ?-'"
-          onScrambleComplete={() => setScrambleDone(true)}
         >
           tu cherches quelque chose peut-être?
         </TextScramble>
@@ -71,11 +77,14 @@ export default function Home() {
         <div
           className="w-full flex flex-col items-center gap-3"
           onClick={(e) => e.stopPropagation()}
-          onTouchStart={(e) => e.stopPropagation()}
         >
-          <p className="text-xs text-zinc-400 font-mono text-center">
+          <TextScramble
+            className="text-xs text-zinc-400 font-mono text-center"
+            trigger={scrambleTitle}
+            characterSet="abcdefghijklmnopqrstuvwxyzàâéèêëîïôùûüç '"
+          >
             Dis moi ce que tu cherches c'est très très trèssssss important
-          </p>
+          </TextScramble>
           <AIChatInput />
         </div>
       )}
