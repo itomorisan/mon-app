@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 type Position = { left: number; width: number; opacity: number };
 
@@ -13,11 +14,11 @@ function NavHeader() {
       className="relative mx-auto flex w-fit rounded-full border-2 border-black bg-white p-1"
       onMouseLeave={() => setPosition((pv) => ({ ...pv, opacity: 0 }))}
     >
-      <Tab setPosition={setPosition}>Home</Tab>
-      <Tab setPosition={setPosition}>Soirées</Tab>
-      <Tab setPosition={setPosition}>Lieux</Tab>
-      <Tab setPosition={setPosition}>About</Tab>
-      <Tab setPosition={setPosition}>Contact</Tab>
+      <Tab setPosition={setPosition} href="/">Home</Tab>
+      <Tab setPosition={setPosition} href="/soirees">Soirées</Tab>
+      <Tab setPosition={setPosition} href="#">Lieux</Tab>
+      <Tab setPosition={setPosition} href="#">About</Tab>
+      <Tab setPosition={setPosition} href="#">Contact</Tab>
       <Cursor position={position} />
     </ul>
   );
@@ -26,9 +27,11 @@ function NavHeader() {
 const Tab = ({
   children,
   setPosition,
+  href,
 }: {
   children: React.ReactNode;
   setPosition: React.Dispatch<React.SetStateAction<Position>>;
+  href: string;
 }) => {
   const ref = useRef<HTMLLIElement>(null);
   return (
@@ -39,9 +42,11 @@ const Tab = ({
         const { width } = ref.current.getBoundingClientRect();
         setPosition({ width, opacity: 1, left: ref.current.offsetLeft });
       }}
-      className="relative z-10 block cursor-pointer px-3 py-1.5 text-xs uppercase text-white mix-blend-difference md:px-5 md:py-3 md:text-base"
+      className="relative z-10 block cursor-pointer text-xs uppercase text-white mix-blend-difference md:text-base"
     >
-      {children}
+      <Link href={href} className="block px-3 py-1.5 md:px-5 md:py-3">
+        {children}
+      </Link>
     </li>
   );
 };

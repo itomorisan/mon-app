@@ -1,8 +1,9 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense } from 'react';
-import NavHeader from '@/components/ui/nav-header';
+import { Home, PartyPopper, MapPin, User, Mail } from 'lucide-react';
+import { Dock } from '@/components/ui/dock';
 
 const soirees = [
   { id: 1, title: 'Nuit Électro', date: 'Sam 7 Juin', lieu: 'Warehouse Paris 18e', prix: '15€' },
@@ -13,20 +14,25 @@ const soirees = [
 
 function SoireesContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const query = searchParams.get('q') || '';
 
-  return (
-    <main className="min-h-screen bg-white text-zinc-900">
-      <div className="pt-6 px-6">
-        <NavHeader />
-      </div>
+  const dockItems = [
+    { icon: Home, label: 'Home', onClick: () => router.push('/') },
+    { icon: PartyPopper, label: 'Soirées', onClick: () => router.push('/soirees') },
+    { icon: MapPin, label: 'Lieux' },
+    { icon: User, label: 'About' },
+    { icon: Mail, label: 'Contact' },
+  ];
 
+  return (
+    <main className="min-h-screen bg-white text-zinc-900 pb-32">
       <div className="max-w-2xl mx-auto px-6 pt-16 pb-8">
         <p className="text-xs text-zinc-400 font-mono">résultats pour</p>
         <h1 className="text-2xl font-semibold mt-1">"{query}"</h1>
       </div>
 
-      <div className="max-w-2xl mx-auto px-6 pb-20 flex flex-col gap-4">
+      <div className="max-w-2xl mx-auto px-6 flex flex-col gap-4">
         {soirees.map((s) => (
           <div
             key={s.id}
@@ -42,6 +48,10 @@ function SoireesContent() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="fixed bottom-6 left-0 right-0 z-50">
+        <Dock items={dockItems} />
       </div>
     </main>
   );
