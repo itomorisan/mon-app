@@ -53,7 +53,7 @@ export default function Home() {
     { icon: HomeIcon, label: "Home", onClick: () => router.push("/?skip=1") },
     { icon: PartyPopper, label: "Soirées", onClick: () => router.push("/soirees") },
     { icon: MapPin, label: "Lieux" },
-    { icon: User, label: "About" },
+    { icon: User, label: "Avis", onClick: () => router.push("/avis") },
     { icon: Mail, label: "Contact" },
   ];
 
