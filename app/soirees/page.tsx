@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense } from 'react';
 import { Home, PartyPopper, MapPin, User, Mail } from 'lucide-react';
 import { Dock } from '@/components/ui/dock';
+import { SmokeBackground } from '@/components/ui/smoke-background';
 
 const soirees = [
   { id: 1, title: 'Nuit Électro', date: 'Sam 7 Juin', lieu: 'Warehouse Paris 18e', prix: '15€' },
@@ -26,24 +27,29 @@ function SoireesContent() {
   ];
 
   return (
-    <main className="min-h-screen bg-white text-zinc-900 pb-32">
-      <div className="max-w-2xl mx-auto px-6 pt-16 pb-8">
-        <p className="text-xs text-zinc-400 font-mono">résultats pour</p>
+    <main className="relative min-h-screen text-white pb-32">
+      {/* Fond animé fumée */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <SmokeBackground smokeColor="#808080" />
+      </div>
+
+      <div className="relative z-10 max-w-2xl mx-auto px-6 pt-16 pb-8">
+        <p className="text-xs text-white/60 font-mono">résultats pour</p>
         <h1 className="text-2xl font-semibold mt-1">"{query}"</h1>
       </div>
 
-      <div className="max-w-2xl mx-auto px-6 flex flex-col gap-4">
+      <div className="relative z-10 max-w-2xl mx-auto px-6 flex flex-col gap-4">
         {soirees.map((s) => (
           <div
             key={s.id}
-            className="group flex items-center justify-between border-b border-zinc-200 py-5 cursor-pointer hover:border-zinc-900 transition-colors"
+            className="group flex items-center justify-between border-b border-white/20 py-5 cursor-pointer hover:border-white transition-colors"
           >
             <div>
               <p className="text-base font-medium">{s.title}</p>
-              <p className="text-xs text-zinc-400 font-mono mt-1">{s.lieu}</p>
+              <p className="text-xs text-white/60 font-mono mt-1">{s.lieu}</p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-zinc-400 font-mono">{s.date}</p>
+              <p className="text-xs text-white/60 font-mono">{s.date}</p>
               <p className="text-sm mt-1">{s.prix}</p>
             </div>
           </div>
