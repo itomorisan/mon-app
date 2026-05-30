@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
+import { motion, useAnimationControls } from "framer-motion";
 import { Users } from "lucide-react";
 
 export interface Soiree {
@@ -17,59 +18,53 @@ export function SoireeColumn(props: {
   soirees: Soiree[];
   onJoin: (s: Soiree) => void;
   className?: string;
-  startSpeed?: number; // px/frame au début (rapide)
-  endSpeed?: number; // px/frame stabilisé (lent, lisible)
+  duration?: number; // durée d'une boucle stabilisée (lente = lisible)
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const speed = useRef(props.startSpeed ?? 22);
-  const pausedUntil = useRef(0);
-  const hovering = useRef(false);
+  const controls = useAnimationControls();
+  const slow = props.duration ?? 22;
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const end = props.endSpeed ?? 0.45;
-    let raf = 0;
-
-    const loop = () => {
-      // décélération douce vers la vitesse stable
-      speed.current += (end - speed.current) * 0.018;
-      const now = performance.now();
-      if (!hovering.current && now > pausedUntil.current) {
-        el.scrollTop += speed.current;
-        const half = el.scrollHeight / 2;
-        if (el.scrollTop >= half) el.scrollTop -= half;
-      }
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-
-    const pause = () => { pausedUntil.current = performance.now() + 2500; };
-    el.addEventListener("wheel", pause, { passive: true });
-    el.addEventListener("touchmove", pause, { passive: true });
-
+    let active = true;
+    (async () => {
+      // 1) balayage rapide au départ (décélère)
+      await controls.start({
+        y: "-50%",
+        transition: { duration: 2.2, ease: "easeOut" },
+      });
+      if (!active) return;
+      // 2) boucle lente et stable pour laisser lire
+      controls.set({ y: "0%" });
+      controls.start({
+        y: "-50%",
+        transition: { duration: slow, ease: "linear", repeat: Infinity },
+      });
+    })();
     return () => {
-      cancelAnimationFrame(raf);
-      el.removeEventListener("wheel", pause);
-      el.removeEventListener("touchmove", pause);
+      active = false;
+      controls.stop();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div
-      ref={ref}
-      onMouseEnter={() => (hovering.current = true)}
-      onMouseLeave={() => (hovering.current = false)}
-      className={`overflow-y-auto no-scrollbar ${props.className ?? ""}`}
-      style={{ scrollbarWidth: "none" }}
-    >
-      <div className="flex flex-col gap-4 pb-4">
+    <div className={`overflow-hidden ${props.className ?? ""}`}>
+      <motion.div
+        animate={controls}
+        initial={{ y: "0%" }}
+        onHoverStart={() => controls.stop()}
+        onHoverEnd={() =>
+          controls.start({
+            y: "-50%",
+            transition: { duration: slow, ease: "linear", repeat: Infinity },
+          })
+        }
+        className="flex flex-col gap-4"
+      >
         {[...props.soirees, ...props.soirees].map((s, i) => (
           <button
             key={i}
             onClick={() => props.onJoin(s)}
-            className="group text-left p-5 rounded-2xl border border-zinc-200 bg-white shadow-sm hover:shadow-lg hover:border-zinc-900 transition-all max-w-xs w-full"
+            className="group text-left p-5 rounded-2xl border border-zinc-200 bg-white shadow-sm hover:shadow-lg hover:border-zinc-900 transition-all w-72"
           >
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">{s.genre}</span>
@@ -93,7 +88,7 @@ export function SoireeColumn(props: {
             </div>
           </button>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

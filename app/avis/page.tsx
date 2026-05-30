@@ -16,9 +16,11 @@ const soirees: Soiree[] = [
   { id: 6, title: "Underground Hangar", org: "Bunker 75", orgImage: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&q=80", date: "Sam 28 Juin", lieu: "Pantin", genre: "Hard Techno", members: 175 },
 ];
 
-const col1 = [soirees[0], soirees[3]];
-const col2 = [soirees[1], soirees[4]];
-const col3 = [soirees[2], soirees[5]];
+// chaque colonne reçoit toutes les soirées (ordre décalé) pour que la boucle soit assez longue
+const rotate = (arr: Soiree[], n: number) => [...arr.slice(n), ...arr.slice(0, n)];
+const col1 = rotate(soirees, 0);
+const col2 = rotate(soirees, 2);
+const col3 = rotate(soirees, 4);
 
 export default function AvisPage() {
   const router = useRouter();
@@ -42,9 +44,9 @@ export default function AvisPage() {
       </div>
 
       <div className="flex justify-center gap-5 mt-10 px-6 h-[62vh] [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]">
-        <SoireeColumn soirees={col1} onJoin={setSelected} startSpeed={26} endSpeed={0.4} className="h-full" />
-        <SoireeColumn soirees={col2} onJoin={setSelected} startSpeed={30} endSpeed={0.5} className="h-full hidden md:block" />
-        <SoireeColumn soirees={col3} onJoin={setSelected} startSpeed={22} endSpeed={0.45} className="h-full hidden lg:block" />
+        <SoireeColumn soirees={col1} onJoin={setSelected} duration={20} className="h-full" />
+        <SoireeColumn soirees={col2} onJoin={setSelected} duration={26} className="h-full hidden md:block" />
+        <SoireeColumn soirees={col3} onJoin={setSelected} duration={23} className="h-full hidden lg:block" />
       </div>
 
       <div className="fixed bottom-6 left-0 right-0 z-50">
