@@ -22,6 +22,7 @@ interface ScrollExpandMediaProps {
   scrollToExpand?: string;
   textBlend?: boolean;
   autoExpand?: boolean;
+  onExpandComplete?: () => void;
   children?: ReactNode;
 }
 
@@ -36,6 +37,7 @@ const ScrollExpandMedia = ({
   scrollToExpand,
   textBlend,
   autoExpand = false,
+  onExpandComplete,
   children,
 }: ScrollExpandMediaProps) => {
   const [scrollProgress, setScrollProgress] = useState<number>(0);
@@ -66,13 +68,7 @@ const ScrollExpandMedia = ({
       if (t >= 1) {
         setMediaFullyExpanded(true);
         setShowContent(true);
-        // Lock sur les annonces : scroll auto vers le contenu
-        setTimeout(() => {
-          const target = sectionRef.current?.querySelector('[data-content]');
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 250);
+        if (onExpandComplete) setTimeout(onExpandComplete, 200);
       } else {
         raf = requestAnimationFrame(tick);
       }
