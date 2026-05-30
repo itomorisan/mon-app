@@ -81,9 +81,9 @@ export default function AvisPage() {
       </div>
 
       <div className="flex justify-center gap-6 mt-12 px-6 [mask-image:linear-gradient(to_bottom,transparent,black_15%,black_85%,transparent)] max-h-[70vh] overflow-hidden">
-        <TestimonialsColumn testimonials={col1} duration={3} />
-        <TestimonialsColumn testimonials={col2} duration={3.8} className="hidden md:block" />
-        <TestimonialsColumn testimonials={col3} duration={3.4} className="hidden lg:block" />
+        <TestimonialsColumn testimonials={col1} duration={1.2} />
+        <TestimonialsColumn testimonials={col2} duration={1.6} className="hidden md:block" />
+        <TestimonialsColumn testimonials={col3} duration={1.4} className="hidden lg:block" />
       </div>
 
       <div className="fixed bottom-6 left-0 right-0 z-50">
