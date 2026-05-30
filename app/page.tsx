@@ -1,12 +1,16 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { Home as HomeIcon, PartyPopper, MapPin, User, Mail } from "lucide-react";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { AIChatInput } from "@/components/ui/ai-chat-input";
+import { Dock } from "@/components/ui/dock";
 
 type Step = "salut" | "question" | "chat";
 
 export default function Home() {
+  const router = useRouter();
   const [ready, setReady] = useState(false);
   const [step, setStep] = useState<Step>("chat");
   const [scrambleTitle, setScrambleTitle] = useState(false);
@@ -45,7 +49,24 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
-  if (!ready || blank) return <main className="min-h-screen bg-white" />;
+  const dockItems = [
+    { icon: HomeIcon, label: "Home", onClick: () => router.push("/?skip=1") },
+    { icon: PartyPopper, label: "Soirées", onClick: () => router.push("/soirees") },
+    { icon: MapPin, label: "Lieux" },
+    { icon: User, label: "About" },
+    { icon: Mail, label: "Contact" },
+  ];
+
+  if (!ready) return <main className="min-h-screen bg-white" />;
+
+  if (blank)
+    return (
+      <main className="min-h-screen bg-white">
+        <div className="fixed bottom-6 left-0 right-0 z-50">
+          <Dock items={dockItems} />
+        </div>
+      </main>
+    );
 
   return (
     <main
